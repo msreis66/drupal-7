@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  apache:
+    build: ./php
+    container_name: project-php
+    restart: always
+    ports:
+      - '80:80'
+    depends_on:
+      - mysqldb
+    links:
+      - mysqldb
+    volumes: 
+      - ./../docroot:/var/www/html
+
+  mysqldb:
+    container_name: project-mysql
+    image: mysql:5.6
+    volumes: 
+      - mysql_data:/var/lib/mysql
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'drupal7'
+
+volumes:
+  mysql_data:
+    driver: local
+    
+networks:
+  default:
+    driver: bridge

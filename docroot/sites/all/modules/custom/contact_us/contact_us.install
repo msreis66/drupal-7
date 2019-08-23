@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall funcions for Contact Us module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function contact_us_schema() {
+  $schema['contact_us_submission'] = [
+    'description' => 'Table to store submissions of Contact Us form',
+    'fields' => [
+      'sid' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'first_name' => [
+        'type' => 'varchar',
+        'length' => '50',
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'last_name' => [
+        'type' => 'varchar',
+        'length' => '50',
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+      ],
+      'subject' => [
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'message' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'indexes' => [
+      'email' => [
+        'email',
+      ],
+      'created' => [
+        'created',
+      ],
+    ],
+    'primary key' => [
+      'sid',
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function contact_us_install() {
+  module_load_include('inc', 'contact_us', 'inc/contact_us.role');
+  contact_us_create_reviewer_role();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function contact_us_uninstall() {
+  module_load_include('inc', 'contact_us', 'inc/contact_us.role');
+  contact_us_delete_reviewer_role();
+
+  $results = db_select('contact_us_submission', 'submissions')
+    ->fields('submissions')
+    ->execute()
+    ->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach ($results as $result) {
+    db_delete('contact_us_submission')
+      ->condition('sid', $result['sid'])
+      ->execute();
+  }
+}

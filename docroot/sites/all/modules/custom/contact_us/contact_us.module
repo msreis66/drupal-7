@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * @file
+ * Creates an interactive Contact Us feature for end users and administrators.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function contact_us_menu() {
+  $items = [];
+
+  // End user form.
+  $items['contact-us'] = [
+    'title' => 'Contact Us',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['contact_us_form'],
+    'access arguments' => ['access content'],
+    'file' => 'inc/contact_us.form.inc',
+  ];
+
+  // Table displaying all submissions.
+  $items['admin/contact-us/submissions'] = [
+    'title' => 'Contact Us Submissions',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['contact_us_submissions_form'],
+    'access arguments' => ['review submission'],
+    'file' => 'inc/contact_us.admin.inc',
+  ];
+
+  // View submissions details.
+  $items['admin/contact-us/submission/%'] = [
+    'title' => 'Submission',
+    'page callback' => 'contact_us_submission_view',
+    'page arguments' => [3],
+    'access arguments' => ['review submission'],
+    'file' => 'inc/contact_us.admin.inc',
+  ];
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function contact_us_permission() {
+  return [
+    'review submission' => [
+      'title' => t('Review Contact Us submissions'),
+      'description' => t('Permission to review and answer submissions.'),
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme().
+ */
+function contact_us_theme() {
+  return [
+    // Theme function to render submissions.
+    'contact_us_submissions' => [
+      'render element' => 'form',
+      'file' => 'inc/contact_us.admin.inc',
+    ],
+
+    // Template to render submissions details.
+    'contact_us__submission_view' => [
+      'template' => 'templates/contact-us--submission-view',
+    ],
+  ];
+}

@@ -1,0 +1,22 @@
+<?php
+
+function example_module_menu() {
+  $items = [];
+  $items['contact-us'] = [
+    'title' => 'Contact Us',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['example_module_contact_us_form'],
+    'access callback' => TRUE,
+  ];
+
+  return $items;
+}
+
+function example_module_contact_us_form($form) {
+  $form['contact_us'] = [
+    '#type' => 'textfield',
+    '#title' => 'Name',
+  ];
+
+  return $form;
+}
