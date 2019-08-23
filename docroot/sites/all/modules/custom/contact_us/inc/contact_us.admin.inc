@@ -151,7 +151,7 @@ function contact_us_submission_view($sid) {
   module_load_include('inc', 'contact_us', 'inc/contact_us.common');
   $condition = ['sid' => $sid];
   $submission = contact_us_get_submissions($condition)->fetchAssoc();
-  
+
   if (empty($submission)) {
     drupal_not_found();
     drupal_exit();
